@@ -19,7 +19,7 @@ const User = require('./models/user');
 const Expense = require('./models/expense');
 const Order = require('./models/order');
 const ForgotPassword = require('./models/forgotPassword');
-// const DownloadedExpenseFile = require('./models/downloadedExpenseFile');
+const DownloadedExpenseFile = require('./models/downloadedExpenseFile');
 
 const accessLogStream = fs.createWriteStream(
     path.join(__dirname, 'access.log'),
@@ -50,8 +50,8 @@ Order.belongsTo(User);
 User.hasMany(ForgotPassword);
 ForgotPassword.belongsTo(User);
 
-// User.hasMany(DownloadedExpenseFile);
-// DownloadedExpenseFile.belongsTo(User);
+User.hasMany(DownloadedExpenseFile);
+DownloadedExpenseFile.belongsTo(User);
 
 sequelize.sync()
 .then((result) => {

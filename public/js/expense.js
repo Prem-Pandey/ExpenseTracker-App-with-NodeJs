@@ -314,16 +314,16 @@ function logoutUser(){
     window.location.href = `${HOST}/user/login`;
 }
 
-// function downloadExpenses(){
-//     axios.get(`${HOST}/premium/download-expenses`, {headers: {'Authorization': token}})
-//     .then((res) => {
-//         const fileURL = res.data;
-//         window.open(fileURL, '_blank');
-//     })
-//     .catch((err) => {
-//         showErrorInDOM('Error: Could not get expenses file :(');
-//     })
-// }
+function downloadExpenses(){
+    axios.get(`${HOST}/premium/download-expenses`, {headers: {'Authorization': token}})
+    .then((res) => {
+        const fileURL = res.data;
+        window.open(fileURL, '_blank');
+    })
+    .catch((err) => {
+        showErrorInDOM('Error: Could not get expenses file :(');
+    })
+}
 
 function showUserInfoInDOM(){
     const token = localStorage.getItem('tokenaaaaa');
@@ -381,45 +381,45 @@ function showLeaderboardInDOM(){
     .catch((err) => showErrorInDOM('Could not fetch leaderboard!'));
 }
 
-// function showDownloadInDOM(item, rank){
-//     const li = document.createElement('li');
-//     li.className = 'list-group-item list-group-item-warning';
-//     li.innerHTML = `${rank}. <a href="${item.fileURL}">${item.createdAt}</a>`;
-//     downloadHistoryList.appendChild(li);
-// }
+function showDownloadInDOM(item, rank){
+    const li = document.createElement('li');
+    li.className = 'list-group-item list-group-item-warning';
+    li.innerHTML = `${rank}. <a href="${item.fileURL}">${item.createdAt}</a>`;
+    downloadHistoryList.appendChild(li);
+}
 
-// function hideDownloadedExpenseFileHistoryInDOM(){
-//     downloadHistoryHeading.innerText = '';
-//     downloadHistoryList.innerText = '';
-//     showDownloadHistoryLI.style.display = 'block';
-//     hideDownloadHistoryLI.style.display = 'none';
-// }
+function hideDownloadedExpenseFileHistoryInDOM(){
+    downloadHistoryHeading.innerText = '';
+    downloadHistoryList.innerText = '';
+    showDownloadHistoryLI.style.display = 'block';
+    hideDownloadHistoryLI.style.display = 'none';
+}
 
-// function showDownloadedExpenseFileHistoryInDOM(){
-//     axios.get(`${HOST}/premium/downloaded-expense-file-history`, {headers: {'Authorization': token}})
-//     .then((res) => {
-//         downloadHistoryHeading.innerText = 'Download History (Last 10)';
-//         const list = res.data.reverse();
-//         downloadHistoryList.innerText = '';
-//         let rank = 1;
-//         list.reverse().forEach((item) => {
-//             showDownloadInDOM(item, rank);
-//             rank++;
-//         });
-//         showDownloadHistoryLI.style.display = 'none';
-//         hideDownloadHistoryLI.style.display = 'block';
-//     })
-//     .catch((err) => {
-//         showErrorInDOM('Error: Could not get downloaded expense file history :(');
-//     })
-// }
+function showDownloadedExpenseFileHistoryInDOM(){
+    axios.get(`${HOST}/premium/downloaded-expense-file-history`, {headers: {'Authorization': token}})
+    .then((res) => {
+        downloadHistoryHeading.innerText = 'Download History (Last 10)';
+        const list = res.data.reverse();
+        downloadHistoryList.innerText = '';
+        let rank = 1;
+        list.reverse().forEach((item) => {
+            showDownloadInDOM(item, rank);
+            rank++;
+        });
+        showDownloadHistoryLI.style.display = 'none';
+        hideDownloadHistoryLI.style.display = 'block';
+    })
+    .catch((err) => {
+        showErrorInDOM('Error: Could not get downloaded expense file history :(');
+    })
+}
 
 function initPremiumEventListeners(){
     showLeaderboardBtn.addEventListener('click', showLeaderboardInDOM);
     hideLeaderboardBtn.addEventListener('click', hideLeaderboardInDOM);
-    // downloadExpensesFileBtn.addEventListener('click', downloadExpenses);
-    // showDownloadHistoryBtn.addEventListener('click', showDownloadedExpenseFileHistoryInDOM);
-    // hideDownloadHistoryBtn.addEventListener('click', hideDownloadedExpenseFileHistoryInDOM);
+    downloadExpensesFileBtn.addEventListener('click', downloadExpenses);
+    showDownloadHistoryBtn.addEventListener('click', showDownloadedExpenseFileHistoryInDOM);
+    hideDownloadHistoryBtn.addEventListener('click', hideDownloadedExpenseFileHistoryInDOM);
 }
 
 function setPaginationLimit(){
