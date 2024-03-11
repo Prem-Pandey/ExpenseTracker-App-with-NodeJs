@@ -50,15 +50,15 @@ exports.postForgotPassword = async (req, res) => {
         const receivers = [{ email: ReceiverEmail }];
         console.log("sender: "+sender);
         console.log("reciever: "+receivers)
-
+        const resetLink = `${host}/password/reset-password/${id}`;
         const result = await tranEmailApi.sendTransacEmail({
             sender: sender,
             to: receivers,
             subject: 'Password reset link',
             htmlContent: `
-                <a href="${host}/password/reset-password/${id}" target="_blank">
-                    Click here to reset password
-                </a>
+            <a href="${resetLink}" target="_blank">
+            Click here to reset password
+             </a>
             `
         }, {transaction: t});
        
@@ -71,6 +71,55 @@ exports.postForgotPassword = async (req, res) => {
     }catch(err){
         console.error('Error sending email:', err);
         console.log('POST FORGOT PASSWORD ERROR');
+        await t.rollback();
+        res.status(500).json({error: err, msg:'Something went wrong'});
+    }
+}
+
+
+exports.getResetPassword = async (req, res) => {
+    const id = req.params.id;
+    try{
+        const forgotPassword = await ForgotPassword.findOne({ where: {id} });
+        if(!forgotPassword || forgotPassword.isActive === false){
+            res.status(400).json({msg: 'id not found or expired'});
+            return;
+        }
+        res.sendFile(path.join(__dirname, '..', 'views', 'resetPassword.html'));
+    }catch(err){
+        console.log('GET RESET PASSWORD ERROR');
+        res.status(500).json({error: err, msg:'Something went wrong'});
+    }
+}
+
+exports.postResetPassword = async (req, res) => {
+    const newPassword = req.body.password;
+    const id = req.body.link.split('/')[req.body.link.split('/').length-1];
+    
+    const t = await sequelize.transaction();
+
+    try{
+        const forgotPassword = await ForgotPassword.findOne({where: {id}, transaction: t});
+        if(!forgotPassword){
+            res.status(400).json({msg: 'User not found'});
+            return;
+        }
+        const userId = forgotPassword.userId;
+
+        const user = await User.findOne({where: {id: userId}, transaction: t});
+
+        const hash = await bcrypt.hash(newPassword, 10);
+
+        user.password = hash;
+        await user.save();
+
+        forgotPassword.isActive = false;
+        await forgotPassword.save();
+
+        await t.commit();
+        res.status(201).json({msg: 'Password updated successfuly'});
+    }catch(err){
+        console.log('GET RESET PASSWORD ERROR');
         await t.rollback();
         res.status(500).json({error: err, msg:'Something went wrong'});
     }
