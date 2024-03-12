@@ -5,7 +5,8 @@ const fs = require('fs');
 const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
-//const helmet = require('helmet');
+// const helmet = require('helmet');
+const compression = require('compression');
 
 const sequelize = require('./util/database');
 const homepageRoutes = require('./routes/homepage');
@@ -30,7 +31,8 @@ const app = express();
 
 app.use(bodyParser.json({ extended: false } ));
 app.use(express.static(path.join(__dirname, 'public')));
-//app.use(helmet());
+// app.use(helmet());
+app.use(compression())
 app.use(morgan('combined', { stream: accessLogStream }));
 
 app.use(homepageRoutes);
